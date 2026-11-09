@@ -1,0 +1,21 @@
+# Flutter build and cache
+flutter_application_1/build/
+flutter_application_1/.dart_tool/
+flutter_application_1/.flutter-plugins
+flutter_application_1/.flutter-plugins-dependencies
+flutter_application_1/.packages
+flutter_application_1/.pub-cache/
+flutter_application_1/.pub/
+
+# Node.js
+backend_api/node_modules/
+backend_api/npm-debug.log
+
+# IDE & OS
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiểm Tra SQL Server - ĐH Tài Nguyên và Môi Trường TPHCM</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f0f2f5;
+      color: #333;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0b4f8c;
+      text-align: center;
+      margin-bottom: 4px;
+      font-size: 22px;
+    }
+    h2 {
+      color: #555;
+      text-align: center;
+      margin-top: 0;
+      font-size: 15px;
+      font-weight: normal;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 20px 0;
+      border-left: 4px solid #0b4f8c;
+    }
+    button {
+      background: #0b4f8c;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #083863;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #0b4f8c;
+      color: white;
+      font-size: 13px;
+    }
+    tr:hover {
+      background: #f9f9f9;
+    }
+    .avatar-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .no-img {
+      width: 60px;
+      height: 60px;
+      background: #eee;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #888;
+      text-align: center;
+      padding: 2px;
+    }
+    .base64-text {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: monospace;
+      font-size: 11px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BẢNG KIỂM TRA DỮ LIỆU MICROSOFT SQL SERVER (KiemTraDB)</h1>
+    <h2>Trường Đại Học Tài Nguyên và Môi Trường TPHCM - Khoa CNTT</h2>
+
+    <div class="status-bar">
+      <div>
+        <strong>Trạng thái kết nối:</strong> <span class="badge" id="server-status">Đang kết nối...</span>
+      </div>
+      <div>
+        <button onclick="loadData()">🔄 Làm mới dữ liệu</button>
+      </div>
+    </div>
+
+    <h3>Danh Sách Sinh Viên & Ảnh Trong Bảng SinhVien</h3>
+    <table id="students-table">
+      <thead>
+        <tr>
+          <th style="width: 50px;">ID</th>
+          <th style="width: 110px;">MSSV</th>
+          <th style="width: 180px;">Họ và Tên</th>
+          <th style="width: 120px;">Môn Học</th>
+          <th style="width: 90px;">Cơ Sở</th>
+          <th style="width: 80px;">Hình Ảnh</th>
+          <th>Đường Dẫn Cục Bộ / Base64</th>
+        </tr>
+      </thead>
+      <tbody id="students-body">
+        <tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu từ SQL Server...</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 30px; font-size: 12px; color: #777; text-align: center;">
+      Hệ thống kết nối trực tiếp CSDL Microsoft SQL Server 2025 (KiemTraDB) thông qua Node.js REST API
+    </div>
+  </div>
+
+  <script>
+    async function loadData() {
+      const statusEl = document.getElementById('server-status');
+      const bodyEl = document.getElementById('students-body');
+
+      try {
+        const res = await fetch('/api/students');
+        const data = await res.json();
+
+        if (data.success && data.data) {
+          statusEl.innerText = 'Online - ' + data.data.length + ' sinh viên';
+          statusEl.style.background = '#e8f5e9';
+          statusEl.style.color = '#2e7d32';
+
+          if (data.data.length === 0) {
+            bodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center;">Chưa có sinh viên nào trong database.</td></tr>';
+            return;
+          }
+
+          bodyEl.innerHTML = data.data.map(sv => {
+            let imgTag = '<div class="no-img">Chưa có ảnh</div>';
+            if (sv.HinhAnhBase64 && sv.HinhAnhBase64.length > 50) {
+              const src = sv.HinhAnhBase64.startsWith('data:') ? sv.HinhAnhBase64 : `data:image/jpeg;base64,${sv.HinhAnhBase64}`;
+              imgTag = `<a href="${src}" target="_blank"><img src="${src}" class="avatar-img" title="Bấm để xem ảnh gốc" /></a>`;
+            } else if (sv.HinhAnhCucBo && (sv.HinhAnhCucBo.startsWith('/uploads') || sv.HinhAnhCucBo.startsWith('http'))) {
+              imgTag = `<a href="${sv.HinhAnhCucBo}" target="_blank"><img src="${sv.HinhAnhCucBo}" class="avatar-img" /></a>`;
+            }
+
+            return `
+              <tr>
+                <td><strong>${sv.Id}</strong></td>
+                <td><span style="font-family: monospace; font-weight: bold;">${sv.MSSV}</span></td>
+                <td><strong>${sv.HoTen}</strong></td>
+                <td>${sv.MaMonHoc || ''}<br/><small style="color:#666;">${sv.TenMonHoc || ''}</small></td>
+                <td><span class="badge" style="background:#e3f2fd; color:#1565c0;">${sv.CoSo || 'Nhà Bè'}</span></td>
+                <td>${imgTag}</td>
+                <td>
+                  <div style="font-size: 11px; color:#444;">📁 Cục bộ: ${sv.HinhAnhCucBo || 'Chưa có'}</div>
+                  <div class="base64-text" title="${sv.HinhAnhBase64 ? 'Độ dài Base64: ' + sv.HinhAnhBase64.length + ' ký tự' : ''}">
+                    🔑 Base64: ${sv.HinhAnhBase64 ? sv.HinhAnhBase64.substring(0, 30) + '...' : 'Chưa có'}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        statusEl.innerText = 'Lỗi kết nối API';
+        statusEl.style.background = '#ffebee';
+        statusEl.style.color = '#c62828';
+        bodyEl.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Lỗi: ${err.message}</td></tr>`;
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
