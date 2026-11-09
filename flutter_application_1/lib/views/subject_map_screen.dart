@@ -35,7 +35,12 @@ class SubjectMapScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.person_add_alt_1, color: Colors.blue),
                   SizedBox(width: 8),
-                  Text('Nhập Sinh Viên (Database)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Text(
+                      'Nhập Sinh Viên (Database)',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ],
               ),
               content: SingleChildScrollView(

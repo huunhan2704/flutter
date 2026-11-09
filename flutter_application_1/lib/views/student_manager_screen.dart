@@ -45,7 +45,12 @@ class _StudentManagerScreenState extends State<StudentManagerScreen> {
                 children: [
                   Icon(Icons.person_add_alt_1, color: Colors.blue),
                   SizedBox(width: 8),
-                  Text('Nhập Sinh Viên Mới', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Text(
+                      'Nhập Sinh Viên Mới',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ],
               ),
               content: SingleChildScrollView(
