@@ -62,8 +62,8 @@ d:\kiemtra\flutter_application_1\lib\
 - **Mã môn học:** `FLUTTER01`
 - **Tên môn học:** `Lập trình di động Flutter`
 - **Chọn cơ sở:**
-  - `[ Nhà bè ]`: **Toạ độ chuẩn Google Maps:** `10.685645, 106.689331` (Khu dân cư Nhơn Đức, Xã Nhơn Đức, H. Nhà Bè, TP.HCM). Nút đổi màu hồng cam khi active.
-  - `[ Lê Văn Sỹ ]`: Toạ độ: `10.79373, 106.66687` (236 Lê Văn Sỹ, Phường 1, Q. Tân Bình).
+  - `[ Nhà bè ]`: **Toạ độ chuẩn Google Maps:** `10.677877, 106.691877` (MMHR+5Q7 Trường Đại học Tài nguyên & Môi trường TP Hồ Chí Minh - Cơ sở Nhà Bè, Hiệp Phước, Hồ Chí Minh). Nút đổi màu hồng cam khi active.
+  - `[ Lê Văn Sỹ ]`: Toạ độ: `10.79373, 106.66687` (236B Lê Văn Sỹ, Phường Tân Sơn Hòa / Phường 1, Q. Tân Bình).
 - **Bản đồ OpenStreetMap & OSRM Polyline:**
   - Bản đồ đường phố sắc nét, không bị lỗi xám (100% không phụ thuộc Google API Key).
   - Marker vị trí cơ sở Nhà Bè & Marker cơ sở Lê Văn Sỹ.
@@ -91,17 +91,38 @@ d:\kiemtra\flutter_application_1\lib\
 
 ---
 
-## 3. HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG
+## 3. HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG (DÀNH CHO PHÁT & THÀNH VIÊN NHÓM)
 
-### Bước 1: Chuyển tiếp cổng cho điện thoại cắm USB
-Khi điện thoại cắm dây USB vào máy tính:
-```powershell
-adb reverse tcp:3000 tcp:3000
+### Bước 1: Tải mã nguồn từ GitHub
+```bash
+git clone https://github.com/huunhan2704/flutter.git
+cd flutter
 ```
-*(Lệnh này giúp điện thoại kết nối thẳng vào cổng 3000 của SQL Server API trên máy tính).*
 
-### Bước 2: Chạy ứng dụng Flutter
-```powershell
-cd d:\kiemtra\flutter_application_1
-flutter run
+### Bước 2: Tạo cơ sở dữ liệu SQL Server
+1. Mở **SQL Server Management Studio (SSMS)** hoặc công cụ dòng lệnh `sqlcmd`.
+2. Mở file `database.sql` và bấm **Execute** để tạo CSDL `KiemTraDB` và các bảng `SinhVien`, `MonHoc`.
+*(Nếu dùng tài khoản SQL Server khác, cập nhật thông tin trong file `backend_api/server.js`).*
+
+### Bước 3: Khởi chạy Backend API (Node.js)
+```bash
+cd backend_api
+npm install
+npm start
 ```
+- API sẽ chạy tại: `http://localhost:3000`
+- Giao diện web xem danh sách sinh viên & ảnh: `http://localhost:3000/`
+
+### Bước 4: Chạy ứng dụng Flutter
+1. Nếu chạy trên **Điện thoại Android thật cắm cáp USB**:
+   Bật gỡ lỗi USB (USB Debugging) trên điện thoại và chạy lệnh:
+   ```bash
+   adb reverse tcp:3000 tcp:3000
+   ```
+   *(Lệnh này giúp điện thoại kết nối trực tiếp đến backend `localhost:3000` trên máy tính).*
+2. Chạy ứng dụng:
+   ```bash
+   cd flutter_application_1
+   flutter pub get
+   flutter run
+   ```
